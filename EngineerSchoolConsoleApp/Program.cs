@@ -71,7 +71,7 @@ namespace EngineerSchoolConsoleApp
             var applicationBusinessTrip = documentService.CreateDocument(null, applicationBusinessTripKind);
 
             applicationBusinessTrip.MainInfo.Author = staffService.GetCurrentEmployee();
-            applicationBusinessTrip.MainInfo.Name = "Код5";
+            applicationBusinessTrip.MainInfo.Name = "Карточка из кода";
             applicationBusinessTrip.MainInfo["RegDate"] = DateTime.Now;
             applicationBusinessTrip.MainInfo.Registrar = staffService.FindEmpoyeeByAccountName("ENGINEER\\ivanov_as");
             applicationBusinessTrip.MainInfo["BusinessTripStart"] = new DateTime(2025, 11, 3);
@@ -101,13 +101,6 @@ namespace EngineerSchoolConsoleApp
 
             context.AcceptChanges();
 
-            /*FileData file = session.FileManager.CreateFile("ИПР_I_SLAE");
-            file.Upload("C:\\StudyV2\\EngineerSchoolConsoleApp\\Files\\ИПР_I_SLAE.pdf");
-            var files = (IList<BaseCardSectionRow>)applicationBusinessTrip.GetSection(CardDocument.Files.ID);
-            var fileRow = new BaseCardSectionRow();
-            fileRow[CardDocument.Files.FileId] = file.Id;
-            files.Add(fileRow);*/
-
             var fileCard = fileCardService.CreateCard(@"C:\StudyV2\EngineerSchoolConsoleApp\Files\ИПР_I_SLAE.pdf");
 
             var files = (IList<BaseCardSectionRow>)applicationBusinessTrip.GetSection(CardDocument.Files.ID);
@@ -121,42 +114,6 @@ namespace EngineerSchoolConsoleApp
             context.AcceptChanges();
 
             Console.WriteLine($"New card id: {applicationBusinessTrip.GetObjectId()}");
-        }
-
-        public static void SomeLogic(UserSession session, ObjectContext context)
-        {
-            Console.WriteLine($"Session: {session.Id}");
-
-            var officeMemoKind = context.FindObject<KindsCardKind>(
-                new QueryObject(
-                    KindsCardKind.NameProperty.Name, "Служебная записка"));
-
-            var requestTypeId = new Guid("{12A19587-C6C0-477F-9811-EFEBAB3FBBE3}");
-            var requestType = context.GetObject<BaseUniversalItem>(requestTypeId);
-
-            var docSvc = context.GetService<IDocumentService>();
-            var staffSvc = context.GetService<IStaffService>();
-            var officeMemo = docSvc.CreateDocument(null, officeMemoKind);
-            officeMemo.MainInfo.Author = staffSvc.GetCurrentEmployee();
-            officeMemo.MainInfo.Registrar = staffSvc.GetCurrentEmployee();
-            officeMemo.MainInfo[CardDocument.MainInfo.RegDate] = DateTime.Now;
-            officeMemo.MainInfo.Name = "Card created from code";
-            officeMemo.MainInfo.Item = requestType;
-
-            var approvers = (IList<BaseCardSectionRow>)officeMemo.GetSection(CardDocument.Approvers.ID);
-            var approverRow1 = new BaseCardSectionRow();
-            approverRow1[CardDocument.Approvers.Approver] = staffSvc.GetCurrentEmployee().GetObjectId();
-            approvers.Add(approverRow1);
-            var approverRow2 = new BaseCardSectionRow();
-            approverRow2[CardDocument.Approvers.Approver] = staffSvc.FindEmpoyeeByAccountName("ENGINEER\\DVAdmin")?.GetObjectId();
-            approvers.Add(approverRow2);
-
-            context.AcceptChanges();
-
-            ChangeCardState(context, officeMemo, "Is approving");
-            context.AcceptChanges();
-
-            Console.WriteLine($"New card id: {officeMemo.GetObjectId()}");
         }
     }
 }
